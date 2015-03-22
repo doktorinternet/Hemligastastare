@@ -1,0 +1,4 @@
+
+javac -cp .;superpaketet/JDBC.jar superpaketet/*.java
+
+java -cp .;superpaketet/JDBC.jar superpaketet/Menu
