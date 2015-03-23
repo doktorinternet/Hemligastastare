@@ -1,3 +1,5 @@
+package superpaketet;
+
 import java.sql.*;
 import java.util.*;
 
@@ -13,14 +15,13 @@ public class DatabaseHandler{
 			Class.forName(JDBC_DRIVER);
 		} catch (ClassNotFoundException cnfE) {
 			System.err.println("Could not find JDBC driver!!!111");
-			//cnfE.printStackTrace();
+			cnfE.printStackTrace();
 			System.exit(1);
 		}
 		System.out.println("Driver found");
 
 		try {
 			System.out.println("Connecting to database...");
-			//String path = this.getClass().getResource("MinDatabas.db").getPath();
 			conn = DriverManager.getConnection("jdbc:sqlite:minDatabas.db"); 
 		} catch (SQLException sqlE) {
 			System.out.println("Couldn't connect:");
@@ -35,81 +36,117 @@ public class DatabaseHandler{
 		}
 	}
 
-	public static ArrayList<String> search(String st, String getInput, boolean returnInput){
+	public static ArrayList<String> search(String st){
 		Statement s = null;
 		ResultSet rs = null; 
-		int ri; 
 		ArrayList<String> arr = new ArrayList<String>(); 
 		try {
 			s = DatabaseHandler.conn.createStatement();
+			rs = s.executeQuery(st);
+			while(rs.next()) {
+				 
+				arr.add("Name: "+rs.getString("givenName"));
+				arr.add("ID: "+rs.getString("id"));
+				arr.add("Family name: "+rs.getString("familyName"));
+				arr.add("Email: "+rs.getString("email"));
+				arr.add("Gender: " + rs.getString("gender"));
+				arr.add("Birthday: " + rs.getString("birth"));
+				arr.add("Member since: " + rs.getString("memberSince"));
+				arr.add("Is active: " + rs.getString("active").equals("1"));
+				arr.add("_______________");
+			} 
 		} catch (SQLException se) {
-			System.out.println("Connection");
 			System.out.println(se.getMessage());
-			System.exit(1);
-		} 
-		try {
-			if (returnInput == true){
-				rs = s.executeQuery(st);
-				while(rs.next()) {
-					
-					
-					ResultSetMetaData rsmd = rs.getMetaData();
-					 
-					String memberID = rsmd.getColumnName(1);
-					String firstName = rsmd.getColumnName(2);
-					String op3 = rsmd.getColumnName(3);
-					String op4 = rsmd.getColumnName(4);
-					String op5 = rsmd.getColumnName(5);
-					String op6 = rsmd.getColumnName(6);
-					String op7 = rsmd.getColumnName(7);
-					String op8 = rsmd.getColumnName(8);
-					String memberIDStr = rs.getString(memberID);
-					String firstNameStr = rs.getString(firstName);
-					String finalOp3 = rs.getString(op3);
-					String finalOp4 = rs.getString(op4);
-					String finalOp5 = rs.getString(op5);
-					String finalOp6 = rs.getString(op6);
-					String finalOp7 = rs.getString(op7);
-					String finalOp8 = rs.getString(op8);
-					 
-						arr.add("Name: "+firstNameStr);
-						arr.add("ID: "+memberIDStr);
-						arr.add("Family name: "+finalOp3);
-						arr.add("Email: "+finalOp4);
-						arr.add("Gender: " + finalOp5);
-						arr.add("Birthday: " + finalOp6);
-						arr.add("Member since: " + finalOp7);
-						arr.add("Is active: " + finalOp8.equals("1"));
-						arr.add("_______________");
-				} 
-			} else {
-				ri = s.executeUpdate(st); 
-			}
-		} catch (SQLException se) {
-			System.out.println("ResultSet");
-			System.out.println(se.getMessage());
-			//System.exit(1);
 		}
 		return arr; 
 	}
 
-	public static ArrayList<String> listNames () {
-		ArrayList<String> er   = search("SELECT * FROM medlem","givenName",true);
-		//String ere = Arrays.asList(er).toString();
-		//String [] result = er.toArray();
-		//System.out.println(Arrays.asList(er));
-		//showList.setText("<html>"+ere+"</html>");
+	public static ArrayList<String> searchTeamInfo(String team){
+		Statement s = null;
+		ResultSet rs = null; 
+		ArrayList<String> arr = new ArrayList<String>(); 
+		try {
+			s = DatabaseHandler.conn.createStatement();
+			rs = s.executeQuery("SELECT * FROM medlem NATURAL JOIN funktion WHERE team = '" + team + "' ORDER BY role DESC, givenName");
+			while(rs.next()) {
+				int role = rs.getInt("role");
+				String roleString = null;
+				if (role == 1){
+					roleString = "Coach";
+				}
+				else if (role == 0){
+					roleString = "Player";
+				}
+				else{
+					roleString = "Parent";
+				}
+
+				arr.add("Name: "+rs.getString("givenName"));
+				arr.add("Family name: "+rs.getString("familyName"));
+				arr.add("ID: "+rs.getString("id"));
+				arr.add("Role: " + roleString);
+				arr.add("_______________");
+			} 
+		} catch (SQLException se) {
+			System.out.println(se.getMessage());
+		}
+		return arr; 
+	}
+
+	public void addMember(String id, String givenName, String familyName, 
+						  String email, String gender, String birthdate, 
+						  String memberSince, String active, String role, 
+						  String team){
+		Statement s = null;
+		try{
+			s = DatabaseHandler.conn.createStatement();
+			s.executeUpdate("INSERT INTO medlem (ID, givenName, familyName, email, "
+							+ "gender, birth, memberSince, active) VALUES ("
+							+ id + ", '" + givenName + "', '" + familyName + "', '" + email
+							+ "', '" + gender + "', '" + birthdate + "', '" + memberSince 
+							+ "', " + active + ")");
+			s.executeUpdate("INSERT INTO funktion (id, role, team) VALUES (" + id + ", " 
+							+ role + ", '" + team + "')");
+		}
+		catch (SQLException se) {
+			System.out.println(se.getMessage());
+		}
+	}
+
+	public static ArrayList<String> listNamesByFamilyName () {
+		ArrayList<String> er   = search("SELECT * FROM medlem ORDER BY familyName");
 		return er;
 	}
 
+	public static ArrayList<String> listNamesByID () {
+		ArrayList<String> er   = search("SELECT * FROM medlem ORDER BY id");
+		return er;
+	}	
+
 	public static ArrayList<String> getMember (String name) {
 		
-		ArrayList<String> er   = search("SELECT * FROM medlem WHERE familyName = '" + name + "'" ,"givenName",true);
-		//String ere = Arrays.asList(er).toString();
-		//String [] result = er.toArray();
-		//System.out.println(Arrays.asList(er));
-		//showList.setText("<html>"+ere+"</html>");
+		ArrayList<String> er   = search("SELECT * FROM medlem WHERE familyName = '" + name + "'");
 		return er;
+	}
+
+	public static ArrayList<String> getTeamcoaches (String team) {
+		
+		ArrayList<String> er   = search("SELECT * FROM medlem NATURAL JOIN funktion WHERE role = 1 AND team = '" + team + "'");
+		return er;
+	}
+
+	public boolean checkMemberExistance(String ID){
+		Statement s = null;
+		ResultSet rs = null; 
+		try{
+			s = DatabaseHandler.conn.createStatement();
+			rs = s.executeQuery("SELECT * FROM medlem WHERE id = " + ID);
+			return rs.next();
+		}
+		catch (SQLException se) {
+			System.out.println(se.getMessage());
+		}
+		return true;
 	}
 }
 
