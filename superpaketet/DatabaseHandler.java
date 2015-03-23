@@ -1,5 +1,3 @@
-package superpaketet;
-
 import java.sql.*;
 import java.util.*;
 
@@ -74,14 +72,14 @@ public class DatabaseHandler{
 					String finalOp7 = rs.getString(op7);
 					String finalOp8 = rs.getString(op8);
 					 
-						arr.add("<b>"+firstNameStr+":</b><br>");
-						arr.add("ID: "+memberIDStr+"<br>");
-						arr.add("Efternam:"+finalOp3+"<br>");
-						arr.add("Email:"+finalOp4+"<br>");
-						arr.add("Kön: "+finalOp5+"<br>");
-						arr.add("Födelsed.: "+finalOp6+"<br>");
-						arr.add("Födelsed.: "+finalOp7+"<br>");
-						arr.add("Aktiv: "+finalOp8+"<br>");
+						arr.add(firstNameStr);
+						arr.add(memberIDStr);
+						arr.add(finalOp3);
+						arr.add(finalOp4);
+						arr.add(finalOp5);
+						arr.add(finalOp6);
+						arr.add(finalOp7);
+						arr.add(finalOp8);
 						arr.add("_______________<br>");
 				} 
 			} else {
