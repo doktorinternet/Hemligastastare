@@ -7,7 +7,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.xml.ws.Holder;
 
-public class Menu extends JFrame implements ActionListener{
+public class Menu extends JFrame{
 	
 	GridLayout mainMenuGrid 			= new GridLayout(1, 2, 4, 4);
 	GridLayout subMenuGrid 				= new GridLayout(3, 2, 4, 4);
@@ -21,7 +21,10 @@ public class Menu extends JFrame implements ActionListener{
 	static JPanel backgroundLeft 		= new JPanel(new BorderLayout());
 	static JPanel backgroundRight 		= new JPanel(new BorderLayout());
 	static JPanel resultPane 			= new JPanel(new BorderLayout()); 
-	static JScrollBar scrollBar				= new JScrollBar(JScrollBar.VERTICAL, 30, 40, 0, 300);
+	static JPanel browseTab 			= new JPanel(new BorderLayout()); 
+	static JPanel editTab	 			= new JPanel(new BorderLayout()); 
+	static JScrollBar scrollBar			= new JScrollBar(JScrollBar.VERTICAL, 30, 40, 0, 300);
+	static JTabbedPane tab				= new JTabbedPane();	
 	
 	
 	public Menu(String title){
@@ -40,62 +43,29 @@ public class Menu extends JFrame implements ActionListener{
 		Container contentPane = window.getContentPane();
 		contentPane.add(backgroundLeft, BorderLayout.LINE_START);
 		contentPane.add(backgroundRight, BorderLayout.LINE_END);
-		backgroundLeft.add(mainMenu, BorderLayout.PAGE_START);
-		backgroundLeft.add(browsingMenu, BorderLayout.LINE_START);
-		backgroundLeft.add(editingMenu, BorderLayout.LINE_END);
+		tab.add("Browse", browseTab);
+		tab.add("Edit", editTab);
+		browseTab.add(browsingMenu, BorderLayout.CENTER);
+		editTab.add(editingMenu, BorderLayout.CENTER);
+		backgroundLeft.add(tab, BorderLayout.PAGE_START);
 		backgroundRight.add(resultPane, BorderLayout.CENTER);
-		browsingMenu.setVisible(false);
-		editingMenu.setVisible(false);
+		resultPane.setVisible(true);
 		backgroundLeft.setVisible(true);
 		backgroundRight.setVisible(true);
 		window.setVisible(true);
-		browsingMenu.b3.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				listOfNames();
-				resultPane.setVisible(true);
-				//mainMenuPane.setVisible(false);
-				browsingMenu.setVisible(false);
-				window.pack();
-				System.out.println("Edit");
-			} });
-		
-		mainMenu.edit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				browsingMenu.setVisible(false);
-				editingMenu.setVisible(true);
-				window.pack();
-				System.out.println("Edit");
-			} });
-		
-		mainMenu.browse.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				resultPane.setVisible(false);
-				editingMenu.setVisible(false);
-				browsingMenu.setVisible(true);
-				window.pack();
-				System.out.println("Browse");
-			} });
-		
-		//frame.pack();
-		/* JLabel ourLabel = new JLabel();
-		ourLabel.setOpaque(true);
-		ourLabel.setBackground(new Color(235, 245, 240));
-		ourLabel.setPreferredSize(new Dimension(200, 20));
-		*/		
-		/* menu.addContentBrowsePane();
-		menu.addContentEditPane(); */
+		window.pack();
 	}
 	
 	public void actionPerformed(ActionEvent e) {}
 	
 	
-	public static void listOfNames(){
-		ArrayList<String> listData = dbh.listNames();
+	public static void listOfNames(ArrayList<String> listData){
 		JList<String> list = new JList(listData.toArray());
 		resultPane.removeAll();
 		resultPane.updateUI();
 		resultPane.add(scrollBar, BorderLayout. LINE_END);
 		resultPane.add(list, BorderLayout.CENTER);
+		window.pack();
 	}
 	
 	public static void main(String[] args) {
@@ -109,86 +79,55 @@ public class Menu extends JFrame implements ActionListener{
         });
     }
 }
-class MainPanel extends JPanel implements ActionListener{
-	
-	JButton browse, edit;
-	GridLayout mainMenuGrid = new GridLayout(1,2);
-	
-	public MainPanel(){
-		
-		setLayout(mainMenuGrid);
-		browse = new JButton("Browse database");
-/* 		browse.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				Menu.editingMenu.setVisible(false);
-				Menu.browsingMenu.setVisible(true);
-				Menu.menu.pack();
-				System.out.println("Browse");
-			} }); */
-	
-		edit = new JButton("Edit database");
-/* 		edit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				Menu.browsingMenu.setVisible(false);
-				Menu.editingMenu.setVisible(true);
-				Menu.menu.pack();
-				System.out.println("Edit");
-			} }); */
-		
-		add(browse);
-		add(edit);
-	}
 
-	public void actionPerformed(ActionEvent e) {}
-}
 
-class BrowsingPanel extends JPanel implements ActionListener{
+class BrowsingPanel extends JPanel{
 	
-	JButton b1, b2, b3, b4, b5, b6;
-	GridLayout subMenuGrid = new GridLayout(3,2);
+	JButton b1, b3, b4, b5, b6;
+	JTextField textField = new JTextField();
+	JComboBox cb; 
+	
 	public BrowsingPanel(){
-		
-		setLayout(subMenuGrid);
-		b1 = new JButton("Search");
-		b1.setToolTipText("This is the first alternative of this menu.");
-		//b1.addActionListener(this);
 	
-		b2 = new JButton("Search by ID");
-		b2.setToolTipText("BEHOLD! This is the second alternative of this menu.");
-		
-		b3 = new JButton("Search by family name");
-		/* b3.addActionListener(new ActionListener() {
+		b1 = new JButton("GO");
+		b1.addActionListener(new ActionListener() {
 		 	public void actionPerformed(ActionEvent event) {
-				Menu.listOfNames();
-				Menu.resultPane.setVisible(true);
-				//mainMenuPane.setVisible(false);
-				setVisible(false);
-				//frame.pack();
-				System.out.println("Edit");
-			} }); */
-			
-		b4 = new JButton("List by ID");
+				String text = textField.getText();
+				ArrayList<String> memberList = Menu.dbh.getMember(text);
+				Menu.listOfNames(memberList);
+			} });
+		setLayout(new GridLayout(3, 1));
+		String [] cbOptions = {"", "Search member", "Search teamleader", "List all members", "Search team"};
+		cb = new JComboBox(cbOptions);
 	
-		b5 = new JButton("List by family name");
-	
-		b6 = new JButton("Info about a team");
+		add(cb);
 		
-		add(b1);
-		add(b2);
-		add(b3);
-		add(b4);
-		add(b5);
-		add(b6);
-		//frame.setContentPane(browseMenuPane);
-		//frame.getContentPane().remove(mainMenuPane);
-		//frame.getContentPane().add(browseMenuPane, BorderLayout.CENTER);
-		//browseMenuPane.setVisible(true);
+		cb.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent e){
+				removeAll();
+				add(cb);
+				if(e.getItem().equals("Search member"))
+				{
+					
+			
+					add(textField);
+					add(b1);
+					
+				}else if(e.getItem().equals("Search teamleader")){
+					
+				}else if(e.getItem().equals("List all members")){
+					
+				}else if(e.getItem().equals("Search team")){
+					
+				}
+			updateUI();
+			}
+		});
 	}
 
-	public void actionPerformed(ActionEvent e) {}
 }
 
-class EditingPanel extends JPanel implements ActionListener{
+class EditingPanel extends JPanel{
 	
 	JButton b1, b2, b3, b4, b5, b6;
 	GridLayout subMenuGrid = new GridLayout(3,2);
@@ -208,84 +147,45 @@ class EditingPanel extends JPanel implements ActionListener{
 		add(b4);
 		add(b5);
 		add(b6);
-		//editMenuPane.setVisible(true);
-		//frame.setContentPane(editMenuPane);
-		//frame.getContentPane().add(editMenuPane, BorderLayout.CENTER);
 	}
-	
-	public void actionPerformed(ActionEvent e) {}
 
 }
-/* 
-class resultPanel extends JPanel implements ActionListener{
 
-	public resultPanel(){
-		
-		
-		
-	}
-	
-	public void actionPerformed(ActionEvent e) {}
+		/* addActionListener(new ActionListener() {
+		 	public void actionPerformed(ActionEvent event) {
+				Menu.listOfNames();
+				Menu.resultPane.setVisible(true);
+				//mainMenuPane.setVisible(false);
+				//frame.pack();
+				System.out.println("Edit");
+			} }); 
+			 */
 
-} */
-
-/*	public void addContentBrowsePane(){
-		
-		b1 = new JButton("Search");
-		//b1.setVerticalTextPosition(AbstractButton.CENTER);
-		//b1.setHorizontalTextPosition(AbstractButton.LEADING);
-		b1.setToolTipText("This is the first alternative of this menu.");
-		//b1.addActionListener(this);
-		
-		b2 = new JButton("Search by ID");
-		b2.setToolTipText("BEHOLD! This is the second alternative of this menu.");
-		
-		b3 = new JButton("Search by family name");
-		b3.addActionListener(new ActionListener() {
+/* browsingMenu.b3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				listOfNames();
 				resultPane.setVisible(true);
 				//mainMenuPane.setVisible(false);
-				browseMenuPane.setVisible(false);
-				//frame.pack();
+				browsingMenu.setVisible(false);
+				window.pack();
 				System.out.println("Edit");
 			} });
-			
-		b4 = new JButton("List by ID");
 		
-		b5 = new JButton("List by family name");
+		mainMenu.edit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				resultPane.setVisible(false);
+				browsingMenu.setVisible(false);
+				editingMenu.setVisible(true);
+				window.pack();
+				System.out.println("Edit");
+			} });
 		
-		b6 = new JButton("Info about a team");
-		
-		browseMenuPane.add(b1);
-		browseMenuPane.add(b2);
-		browseMenuPane.add(b3);
-		browseMenuPane.add(b4);
-		browseMenuPane.add(b5);
-		browseMenuPane.add(b6);
-		//frame.setContentPane(browseMenuPane);
-		//frame.getContentPane().remove(mainMenuPane);
-		//frame.getContentPane().add(browseMenuPane, BorderLayout.CENTER);
-		//browseMenuPane.setVisible(true);
-	}
-	
-	public void addContentEditPane(){
-	
-		b7 = new JButton("Create new member");
-		b8 = new JButton("Update existing member");
-		b9 = new JButton("Activate/deactivate member");
-		b10 = new JButton("Update mail");
-		b11 = new JButton("Update function");
-		b12 = new JButton("Delete member");
-		editMenuPane.add(b7);
-		editMenuPane.add(b8);
-		editMenuPane.add(b9);
-		editMenuPane.add(b10);
-		editMenuPane.add(b11);
-		editMenuPane.add(b12);
-		//editMenuPane.setVisible(true);
-		//frame.setContentPane(editMenuPane);
-		//frame.getContentPane().add(editMenuPane, BorderLayout.CENTER);
-		
-	}
-	*/
+		mainMenu.browse.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				resultPane.setVisible(false);
+				editingMenu.setVisible(false);
+				browsingMenu.setVisible(true);
+				window.pack();
+				System.out.println("Browse");
+			} });
+		 */
