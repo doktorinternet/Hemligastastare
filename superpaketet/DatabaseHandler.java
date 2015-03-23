@@ -3,7 +3,7 @@ import java.util.*;
 
 public class DatabaseHandler{
 
-	static final String DB_URL = "jdbc:sqlite:minDatabas";
+	static final String DB_URL = "jdbc:sqlite:minDatabas.db";
 	static final String JDBC_DRIVER = "org.sqlite.JDBC";
 	public static Connection conn = null;
 	
@@ -72,15 +72,15 @@ public class DatabaseHandler{
 					String finalOp7 = rs.getString(op7);
 					String finalOp8 = rs.getString(op8);
 					 
-						arr.add(firstNameStr);
-						arr.add(memberIDStr);
-						arr.add(finalOp3);
-						arr.add(finalOp4);
-						arr.add(finalOp5);
-						arr.add(finalOp6);
-						arr.add(finalOp7);
-						arr.add(finalOp8);
-						arr.add("_______________<br>");
+						arr.add("Name: "+firstNameStr);
+						arr.add("ID: "+memberIDStr);
+						arr.add("Family name: "+finalOp3);
+						arr.add("Email: "+finalOp4);
+						arr.add("Gender: " + finalOp5);
+						arr.add("Birthday: " + finalOp6);
+						arr.add("Member since: " + finalOp7);
+						arr.add("Is active: " + finalOp8.equals("1"));
+						arr.add("_______________");
 				} 
 			} else {
 				ri = s.executeUpdate(st); 
@@ -95,6 +95,16 @@ public class DatabaseHandler{
 
 	public static ArrayList<String> listNames () {
 		ArrayList<String> er   = search("SELECT * FROM medlem","givenName",true);
+		//String ere = Arrays.asList(er).toString();
+		//String [] result = er.toArray();
+		//System.out.println(Arrays.asList(er));
+		//showList.setText("<html>"+ere+"</html>");
+		return er;
+	}
+
+	public static ArrayList<String> getMember (String name) {
+		
+		ArrayList<String> er   = search("SELECT * FROM medlem WHERE familyName = '" + name + "'" ,"givenName",true);
 		//String ere = Arrays.asList(er).toString();
 		//String [] result = er.toArray();
 		//System.out.println(Arrays.asList(er));
