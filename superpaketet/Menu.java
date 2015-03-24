@@ -93,12 +93,12 @@ class BrowsingPanel extends JPanel{
 	
 	public BrowsingPanel(){
 	
-		b1 = new JButton("GO");
-		b2 = new JButton("By ID");
-		b3 = new JButton("By family name");
+		b1 = new JButton("Go");
+		b2 = new JButton("Go");
+		b3 = new JButton("Go");
 
 		setLayout(new GridLayout(12, 1));
-		String [] cbOptions = {"Select action:", "Search member", "Search teamleader", "List all members", "Search info on team"};
+		String [] cbOptions = {"Select:", "Search member", "Search teamleader", "List all members", "Search info on team"};
 		cb = new JComboBox(cbOptions);
 	
 		add(cb);
@@ -114,7 +114,7 @@ class BrowsingPanel extends JPanel{
 							String text = textField.getText();
 							Menu.listOfNames(Menu.dbh.getMember(text));
 					} });
-					add(textField);
+					addLabeledComponent("Last name:", textField);
 					add(b1);
 					
 				}else if(e.getItem().equals("Search teamleader")){
@@ -124,7 +124,7 @@ class BrowsingPanel extends JPanel{
 							String text = textField.getText();
 							Menu.listOfNames(Menu.dbh.getTeamcoaches(text));
 					} });					
-					add(textField);
+					addLabeledComponent("Team name:", textField);
 					add(b1);
 
 				}else if(e.getItem().equals("List all members")){
@@ -138,8 +138,8 @@ class BrowsingPanel extends JPanel{
 		 				public void actionPerformed(ActionEvent event) {
 							Menu.listOfNames(Menu.dbh.listNamesByFamilyName());
 					} });
-					add(b2);
-					add(b3);
+					addLabeledComponent("List by ID:", b2);
+					addLabeledComponent("List by last name:", b3);
 
 				}else if(e.getItem().equals("Search info on team")){
 					
@@ -148,12 +148,19 @@ class BrowsingPanel extends JPanel{
 							String text = textField.getText();
 							Menu.listOfNames(Menu.dbh.searchTeamInfo(text));
 					} });					
-					add(textField);
+					addLabeledComponent("Team name:", textField);
 					add(b1);				
 				}
 			updateUI();
 			}
 		});
+	}
+
+	public void addLabeledComponent(String label, Component comp){
+		JPanel p = new JPanel(new GridLayout(1,2));
+		p.add(new JLabel ("           " + label));
+		p.add(comp);
+		add(p);
 	}
 
 }
@@ -189,7 +196,7 @@ class EditingPanel extends JPanel{
 		String [] roles = {"player", "coach", "parent"};
 		roleBox = new JComboBox(roles);
 		String [] cbOptions = {
-			"Select action:", 
+			"Select:", 
 			"Create new member", 
 			"Update existing member", 
 			"Activate/deactivate member",
