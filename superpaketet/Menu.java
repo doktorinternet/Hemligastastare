@@ -227,10 +227,10 @@ class EditingPanel extends JPanel{
 								}
 
 								String roleString;
-								if (roleBox.getSelectedItem().equals("coach")){
+								if (roleBox.getSelectedItem().equals("player")){
 									roleString = "0";
 								}
-								else if (roleBox.getSelectedItem().equals("player")){
+								else if (roleBox.getSelectedItem().equals("coach")){
 									roleString = "1";
 								}
 								else{
@@ -267,13 +267,22 @@ class EditingPanel extends JPanel{
 				}
 
 				else if(e.getItem().equals("Delete member")){
-
+					addLabeledComponent("ID:", inputField1);
+					add(submitButton);
+					submitButton.addActionListener(new ActionListener() {
+		 				public void actionPerformed(ActionEvent event) {
+		 					if(Menu.dbh.checkMemberExistance(inputField1.getText())){
+		 						Menu.dbh.deleteMember(inputField1.getText());
+		 					}
+		 					else{
+		 						JOptionPane.showMessageDialog(null, "ID does not exist", "Error", 0);
+		 					}
+		 				}
+		 			});		
 				}
-
-
 			}
 		});
-
+		
 
 	}	
 

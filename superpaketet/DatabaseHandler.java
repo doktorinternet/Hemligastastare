@@ -113,6 +113,18 @@ public class DatabaseHandler{
 		}
 	}
 
+	public void deleteMember(String id){
+		Statement s = null;
+		try{
+			s = DatabaseHandler.conn.createStatement();
+			s.executeUpdate("DELETE FROM medlem WHERE id = '" + id + "'");
+			s.executeUpdate("DELETE FROM funktion WHERE id = '" + id + "'");
+		}
+		catch (SQLException se) {
+			System.out.println(se.getMessage());
+		}
+	}
+
 	public static ArrayList<String> listNamesByFamilyName () {
 		ArrayList<String> er   = search("SELECT * FROM medlem ORDER BY familyName");
 		return er;
