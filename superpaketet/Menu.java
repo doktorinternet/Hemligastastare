@@ -169,6 +169,7 @@ class EditingPanel extends JPanel{
 	
 	JButton b1, b2, b3, b4, b5, b6;
 	JButton submitButton = new JButton("Submit");
+	JButton submitButton2 = new JButton("Check existance");
 	GridLayout subMenuGrid = new GridLayout(12,1);
 	JFormattedTextField inputField1;
 	JTextField inputField2 = new JTextField();
@@ -181,6 +182,8 @@ class EditingPanel extends JPanel{
 	JComboBox cb;
 	JCheckBox active = new JCheckBox();
 	JComboBox roleBox;
+	JPanel idPanel = new JPanel(new GridLayout(1,2));
+	String idPanelInput;
 
 
 	
@@ -211,50 +214,64 @@ class EditingPanel extends JPanel{
 				removeAll();
 				add(cb);
 				if(e.getItem().equals("Create new member")){
-					addLabeledComponent("ID:", inputField1);
-					addLabeledComponent("Given name:", inputField2);
-					addLabeledComponent("Family name:", inputField3);
-					addLabeledComponent("E-mail:", inputField4);
-					addLabeledComponent("Gender:", inputField5);
-					addLabeledComponent("Birth date:", birthField);
-					addLabeledComponent("Member since:", joinField);
-					addLabeledComponent("Active status:", active);
-					addLabeledComponent("Role:", roleBox);
-					addLabeledComponent("Team:", inputField6);
-					add(submitButton);
-					submitButton.addActionListener(new ActionListener() {
-		 				public void actionPerformed(ActionEvent event) {
-							if(validMember()){
-								String activeString;
-								if(active.isSelected()){
-									activeString = "1";
-								}
-								else{
-									activeString = "0";
-								}
+					idPanel = new JPanel(new GridLayout(1,2));
+					idPanel.add(new JLabel ("           ID:"));
+					idPanel.add(inputField1);
+					add(idPanel);
+					submitButton2.addActionListener(new ActionListener() {
+			 			public void actionPerformed(ActionEvent event) {
+							if(!Menu.dbh.checkMemberExistance(inputField1.getText())){
+								idPanelInput = inputField1.getText();
+								remove(idPanel);
+								remove(submitButton2);
+								add(labeledComponent("Given name:", inputField2));
+								add(labeledComponent("Family name:", inputField3));
+								add(labeledComponent("E-mail:", inputField4));
+								add(labeledComponent("Gender:", inputField5));
+								add(labeledComponent("Birth date:", birthField));
+								add(labeledComponent("Member since:", joinField));
+								add(labeledComponent("Active status:", active));
+								add(labeledComponent("Role:", roleBox));
+								add(labeledComponent("Team:", inputField6));
+								submitButton.addActionListener(new ActionListener() {
+					 				public void actionPerformed(ActionEvent event) {
+										if(validMember()){
+											String activeString;
+											if(active.isSelected()){
+												activeString = "1";
+											}
+											else{
+												activeString = "0";
+											}
 
-								String roleString;
-								if (roleBox.getSelectedItem().equals("player")){
-									roleString = "0";
-								}
-								else if (roleBox.getSelectedItem().equals("coach")){
-									roleString = "1";
-								}
-								else{
-									roleString = "2";
-								}
+											String roleString;
+											if (roleBox.getSelectedItem().equals("player")){
+												roleString = "0";
+											}
+											else if (roleBox.getSelectedItem().equals("coach")){
+												roleString = "1";
+											}
+											else{
+												roleString = "2";
+											}
 
-								Menu.dbh.addMember(inputField1.getText(), inputField2.getText(), inputField3.getText(),
-												   inputField4.getText(), inputField5.getText(), birthField.getText(),
-												   joinField.getText(), activeString, roleString, inputField6.getText());
+											Menu.dbh.addMember(idPanelInput, inputField2.getText(), inputField3.getText(),
+															   inputField4.getText(), inputField5.getText(), birthField.getText(),
+															   joinField.getText(), activeString, roleString, inputField6.getText());
+										}
+										else{
+											JOptionPane.showMessageDialog(null, "All fields must have input", "Error", 0);
+										}						
+									} 
+								});
+								add(submitButton);
 							}
 							else{
-								JOptionPane.showMessageDialog(null, "Invalid input", "Error", 0);
-							}						
-						} 
+								JOptionPane.showMessageDialog(null, "ID occupied", "Error", 0);
+							}
+						}		
 					});
-
-
+					add(submitButton2);
 				}
 
 				else if(e.getItem().equals("Update existing member")){
@@ -274,18 +291,19 @@ class EditingPanel extends JPanel{
 				}
 
 				else if(e.getItem().equals("Delete member")){
-					addLabeledComponent("ID:", inputField1);
-					add(submitButton);
+
+					add(labeledComponent("ID:", inputField1));
 					submitButton.addActionListener(new ActionListener() {
 		 				public void actionPerformed(ActionEvent event) {
 		 					if(Menu.dbh.checkMemberExistance(inputField1.getText())){
 		 						Menu.dbh.deleteMember(inputField1.getText());
 		 					}
 		 					else{
-		 						JOptionPane.showMessageDialog(null, "ID does not exist", "Error", 0);
+		 						JOptionPane.showMessageDialog(null, "No such ID", "Error", 0);
 		 					}
 		 				}
-		 			});		
+		 			});
+		 			add(submitButton);		
 				}
 			}
 		});
@@ -293,19 +311,18 @@ class EditingPanel extends JPanel{
 
 	}	
 
-	public void addLabeledComponent(String label, Component comp){
+	public JPanel labeledComponent(String label, Component comp){
 		JPanel p = new JPanel(new GridLayout(1,2));
 		p.add(new JLabel ("           " + label));
 		p.add(comp);
-		add(p);
+		return p;
 	}
 
 	public boolean validMember(){
 		if (inputField1.getText().equals("") || inputField2.getText().equals("") || 
 			inputField3.getText().equals("") || inputField4.getText().equals("") || 
 			inputField5.getText().equals("") || inputField6.getText().equals("") ||
-			birthField.getText().equals("")  || joinField.getText().equals("") || 
-			Menu.dbh.checkMemberExistance(inputField1.getText())){
+			birthField.getText().equals("")  || joinField.getText().equals("")){
 
 			return false;
 		}

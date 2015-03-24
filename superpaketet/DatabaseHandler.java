@@ -152,7 +152,7 @@ public class DatabaseHandler{
 		ResultSet rs = null; 
 		try{
 			s = DatabaseHandler.conn.createStatement();
-			rs = s.executeQuery("SELECT * FROM medlem WHERE id = " + ID);
+			rs = s.executeQuery("SELECT * FROM medlem WHERE id = '" + ID + "'");
 			return rs.next();
 		}
 		catch (SQLException se) {
