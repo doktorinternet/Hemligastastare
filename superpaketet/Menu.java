@@ -71,6 +71,13 @@ public class Menu extends JFrame{
 		resultPane.add(list, BorderLayout.CENTER);
 		resultPane.updateUI();
 	}
+
+	public static void printToResultPane(String a){
+		JLabel label = new JLabel(a, SwingConstants.CENTER);
+		resultPane.removeAll();
+		resultPane.add(label, BorderLayout.CENTER);
+		resultPane.updateUI();
+	}
 	
 	public static void main(String[] args) {
 		//Schedule a job for the event-dispatching thread:
@@ -114,7 +121,7 @@ class BrowsingPanel extends JPanel{
 							String text = textField.getText();
 							Menu.listOfNames(Menu.dbh.getMember(text));
 					} });
-					addLabeledComponent("Last name:", textField);
+					add(EditingPanel.labeledComponent("Last name:", textField));
 					add(b1);
 					
 				}else if(e.getItem().equals("Search teamleader")){
@@ -124,7 +131,7 @@ class BrowsingPanel extends JPanel{
 							String text = textField.getText();
 							Menu.listOfNames(Menu.dbh.getTeamcoaches(text));
 					} });					
-					addLabeledComponent("Team name:", textField);
+					add(EditingPanel.labeledComponent("Team name:", textField));
 					add(b1);
 
 				}else if(e.getItem().equals("List all members")){
@@ -138,8 +145,8 @@ class BrowsingPanel extends JPanel{
 		 				public void actionPerformed(ActionEvent event) {
 							Menu.listOfNames(Menu.dbh.listNamesByFamilyName());
 					} });
-					addLabeledComponent("List by ID:", b2);
-					addLabeledComponent("List by last name:", b3);
+					add(EditingPanel.labeledComponent("List by ID:", b2));
+					add(EditingPanel.labeledComponent("List by last name:", b3));
 
 				}else if(e.getItem().equals("Search info on team")){
 					
@@ -148,19 +155,12 @@ class BrowsingPanel extends JPanel{
 							String text = textField.getText();
 							Menu.listOfNames(Menu.dbh.searchTeamInfo(text));
 					} });					
-					addLabeledComponent("Team name:", textField);
+					add(EditingPanel.labeledComponent("Team name:", textField));
 					add(b1);				
 				}
 			updateUI();
 			}
 		});
-	}
-
-	public void addLabeledComponent(String label, Component comp){
-		JPanel p = new JPanel(new GridLayout(1,2));
-		p.add(new JLabel ("           " + label));
-		p.add(comp);
-		add(p);
 	}
 
 }
@@ -169,6 +169,7 @@ class EditingPanel extends JPanel{
 	
 	JButton b1, b2, b3, b4, b5, b6;
 	JButton submitButton = new JButton("Submit");
+	JButton submitButtonDelete = new JButton("Submit");
 	JButton submitButton2 = new JButton("Check existance");
 	GridLayout subMenuGrid = new GridLayout(12,1);
 	JFormattedTextField inputField1;
@@ -220,10 +221,14 @@ class EditingPanel extends JPanel{
 					add(idPanel);
 					submitButton2.addActionListener(new ActionListener() {
 			 			public void actionPerformed(ActionEvent event) {
-							if(!Menu.dbh.checkMemberExistance(inputField1.getText())){
+			 				boolean memberExist = Menu.dbh.checkMemberExistance(inputField1.getText());
+							if(!memberExist){
+								removeAll();
+								add(cb);
 								idPanelInput = inputField1.getText();
 								remove(idPanel);
 								remove(submitButton2);
+								add(new JLabel("New member - ID: " + idPanelInput, SwingConstants.CENTER));
 								add(labeledComponent("Given name:", inputField2));
 								add(labeledComponent("Family name:", inputField3));
 								add(labeledComponent("E-mail:", inputField4));
@@ -258,6 +263,7 @@ class EditingPanel extends JPanel{
 											Menu.dbh.addMember(idPanelInput, inputField2.getText(), inputField3.getText(),
 															   inputField4.getText(), inputField5.getText(), birthField.getText(),
 															   joinField.getText(), activeString, roleString, inputField6.getText());
+											Menu.printToResultPane("Member successfully added");
 										}
 										else{
 											JOptionPane.showMessageDialog(null, "All fields must have input", "Error", 0);
@@ -293,17 +299,19 @@ class EditingPanel extends JPanel{
 				else if(e.getItem().equals("Delete member")){
 
 					add(labeledComponent("ID:", inputField1));
-					submitButton.addActionListener(new ActionListener() {
+					submitButtonDelete.addActionListener(new ActionListener() {
 		 				public void actionPerformed(ActionEvent event) {
-		 					if(Menu.dbh.checkMemberExistance(inputField1.getText())){
+		 					boolean memberExist = Menu.dbh.checkMemberExistance(inputField1.getText());
+		 					if(memberExist){
 		 						Menu.dbh.deleteMember(inputField1.getText());
+		 						Menu.printToResultPane("Member successfully deleted");
 		 					}
 		 					else{
 		 						JOptionPane.showMessageDialog(null, "No such ID", "Error", 0);
 		 					}
 		 				}
 		 			});
-		 			add(submitButton);		
+		 			add(submitButtonDelete);		
 				}
 			}
 		});
@@ -311,7 +319,7 @@ class EditingPanel extends JPanel{
 
 	}	
 
-	public JPanel labeledComponent(String label, Component comp){
+	public static JPanel labeledComponent(String label, Component comp){
 		JPanel p = new JPanel(new GridLayout(1,2));
 		p.add(new JLabel ("           " + label));
 		p.add(comp);
