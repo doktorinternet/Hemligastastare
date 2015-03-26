@@ -1,6 +1,7 @@
 package superpaketet;
 
 import superpaketet.DatabaseHandler;
+import java.lang.*;
 import java.sql.*;
 import java.util.*;
 import java.awt.*;
@@ -409,10 +410,27 @@ class EditingPanel extends JPanel{
 											add(updateBox);
 
 											add(new JLabel("Choose roles for member", SwingConstants.CENTER));
-											add(new JLabel ("           Roles:"));
+											add(new JLabel ("              Roles:"));
 											add(labeledComponent("      Player", playerCheck));
 											add(labeledComponent("      Coach", coachCheck));
 											add(labeledComponent("      Parent", parentCheck));
+											
+											String [] roles = Menu.dbh.checkMemberRoles(idPanelInput);
+											Arrays.sort(roles);
+											String coach 	= roles[0];
+											String parent   = roles[1];
+											String player 	= roles[2];
+											
+											if(player.equalsIgnoreCase("player")){
+												playerCheck.setSelected(true);
+											}
+											if(coach.equalsIgnoreCase("coach")){
+												playerCheck.setSelected(true);
+											}
+											if(parent.equalsIgnoreCase("parent")){
+												playerCheck.setSelected(true);
+											}
+											
 											if (parentCheck.isSelected()){
 												isParent = true;
 											}
@@ -422,6 +440,7 @@ class EditingPanel extends JPanel{
 											if(playerCheck.isSelected()){
 												isPlayer = true;
 											}
+											add(submitButtonUpdate);
 											submitButtonUpdate.addActionListener(new ActionListener() {
 								 				public void actionPerformed(ActionEvent event) {
 								 					if(!inputField2.equals("")){
@@ -433,7 +452,6 @@ class EditingPanel extends JPanel{
 								 					}
 								 				}
 		 									});
-		 									add(submitButtonUpdate);
 										}
 
 										else if(e.getItem().equals("Activate/deactivate member")){

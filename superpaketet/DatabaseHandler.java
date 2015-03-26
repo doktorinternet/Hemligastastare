@@ -106,21 +106,18 @@ public void addMember(String id, String givenName, String familyName,
 							+ id + ", '" + givenName + "', '" + familyName + "', '" + email
 							+ "', '" + gender + "', '" + birthdate + "', '" + memberSince 
 							+ "', " + active + ")");
-			String role;
-			if(isCoach){
-				role = "1";
+			
+			if(isPlayer){
 				s.executeUpdate("INSERT INTO funktion (id, role, team) VALUES (" 
-								+ id + ", " + role + ", '" + team + "')");
+								+ id + ", 0, '" + team + "')");
+			}
+			if(isCoach){
+				s.executeUpdate("INSERT INTO funktion (id, role, team) VALUES (" 
+								+ id + ", 1, '" + team + "')");
 			}
 			if(isParent){
-				role = "2";
 				s.executeUpdate("INSERT INTO funktion (id, role, team) VALUES (" 
-								+ id + ", " + role + ", '" + team + "')");
-			}
-			if(isPlayer){
-				role = "0";
-				s.executeUpdate("INSERT INTO funktion (id, role, team) VALUES (" 
-								+ id + ", " + role + ", '" + team + "')");
+								+ id + ", 2, '" + team + "')");
 			}
 		
 		}
@@ -222,6 +219,44 @@ public void addMember(String id, String givenName, String familyName,
 			System.out.println(se.getMessage());
 		}
 		return true;
+	}
+	
+	public String[] checkMemberRoles(String id){
+		Statement s = null;
+		ResultSet rs = null;
+		String role = null;
+		String[] roles = new String[2];
+		try{
+			s = DatabaseHandler.conn.createStatement();
+			rs = s.executeQuery("SELECT role FROM funktion NATURAL JOIN "
+								+ "medlem WHERE id = '" + id + "'");
+			//roles = rs.getArray("role");
+			while(rs.next()){
+				int i = 1;
+				int a = 0;
+				if(rs.getString(i).equals("0")){
+					role = "Player";
+					roles[a] = role;					
+				}
+				else if(rs.getString(i).equals("1")){
+					role = "Coach";
+					roles[a] = role;
+				}
+				else if(rs.getString(i).equals("2")){
+					role = "Parent";
+					roles[a] = role;				
+				}
+				else if(rs.getString(i) == null){
+					role = "z";
+				}
+				i++;
+				a++;
+			}
+		}
+		catch (SQLException se){
+			System.out.println(se.getMessage());
+		}
+		return roles;
 	}
 
 	public String checkMemberActive(String id){
