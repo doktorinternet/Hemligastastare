@@ -416,20 +416,34 @@ class EditingPanel extends JPanel{
 											add(labeledComponent("      Parent", parentCheck));
 											
 											String [] roles = Menu.dbh.checkMemberRoles(idPanelInput);
+											roles = Arrays.stream(roles).filter(s -> (s != null && s.length() > 0)).toArray(String[]::new);   
 											Arrays.sort(roles);
-											String coach 	= roles[0];
-											String parent   = roles[1];
-											String player 	= roles[2];
 											
-											if(player.equalsIgnoreCase("player")){
+											String coach; 	
+											String parent;  
+											String player; 	
+											
+											for ( String s : roles){
+												if (s.equals("0")){
+													playerCheck.setSelected(true);
+												}
+												else if(s.equals("1")){
+													coachCheck.setSelected(true);
+												}
+												else if(s.equals("2")){
+													parentCheck.setSelected(true);
+												}
+											}
+											
+/* 											if(roles[2].equalsIgnoreCase("player")){
 												playerCheck.setSelected(true);
 											}
-											if(coach.equalsIgnoreCase("coach")){
-												playerCheck.setSelected(true);
+											if(roles[0].equalsIgnoreCase("coach")){
+												coachCheck.setSelected(true);
 											}
-											if(parent.equalsIgnoreCase("parent")){
+											if(roles[1].equalsIgnoreCase("parent")){
 												playerCheck.setSelected(true);
-											}
+											} */
 											
 											if (parentCheck.isSelected()){
 												isParent = true;
@@ -448,7 +462,7 @@ class EditingPanel extends JPanel{
 								 						Menu.printToResultPane("Member successfully updated");
 								 					}
 								 					else{
-								 						JOptionPane.showMessageDialog(null, "All fields need input", "Error", 0);
+								 						JOptionPane.showMessageDialog(null, "Please enter a members ID", "Error", 0);
 								 					}
 								 				}
 		 									});

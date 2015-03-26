@@ -168,17 +168,17 @@ public void addMember(String id, String givenName, String familyName,
 			if(isCoach){
 				s.executeUpdate("UPDATE funktion SET role = '1' WHERE ID = '" + id + "'");
 			}else{
-				s.executeUpdate("DELETE role FROM funktion WHERE role = '1' AND id = '" + id +"'");
+				s.executeUpdate("DELETE FROM funktion WHERE role = '1' AND id = '" + id +"'");
 			}
 			if(isParent){
 				s.executeUpdate("UPDATE funktion SET role = '2' WHERE ID = '" + id + "'");
 			}else{
-				s.executeUpdate("DELETE role FROM funktion WHERE role = '2' AND id = '" + id + "'");
+				s.executeUpdate("DELETE FROM funktion WHERE role = '2' AND id = '" + id + "'");
 			}	
 			if(isPlayer){
 				s.executeUpdate("UPDATE funktion SET role = '0' WHERE ID = '" + id + "'");
 			}else{
-				s.executeUpdate("DELETE role FROM funktion WHERE role = '0' AND id = '" + id + "'");
+				s.executeUpdate("DELETE FROM funktion WHERE role = '0' AND id = '" + id + "'");
 			}
 		}
 		catch(SQLException se){
@@ -230,8 +230,9 @@ public void addMember(String id, String givenName, String familyName,
 			s = DatabaseHandler.conn.createStatement();
 			rs = s.executeQuery("SELECT role FROM funktion NATURAL JOIN "
 								+ "medlem WHERE id = '" + id + "'");
-			//roles = rs.getArray("role");
-			while(rs.next()){
+			Array a = rs.getArray("is_nullable");
+			String[] nullable = (String[])a.getArray();
+			/* while(rs.next()){
 				int i = 1;
 				int a = 0;
 				if(rs.getString(i).equals("0")){
@@ -247,11 +248,17 @@ public void addMember(String id, String givenName, String familyName,
 					roles[a] = role;				
 				}
 				else if(rs.getString(i) == null){
-					role = "z";
+					role = "zilch";
+					roles[a] = role;
 				}
 				i++;
 				a++;
-			}
+			} */
+		
+		for (String r : nullable){
+			System.out.println(r);
+		}
+		
 		}
 		catch (SQLException se){
 			System.out.println(se.getMessage());
