@@ -171,6 +171,7 @@ class EditingPanel extends JPanel{
 	JButton b1, b2, b3, b4, b5, b6;
 	JButton submitButton = new JButton("Submit");
 	JButton submitButtonDelete = new JButton("Submit");
+	JButton submitButtonActive = new JButton("Change member active status");
 	JButton submitButton2 = new JButton("Check existance");
 	GridLayout subMenuGrid = new GridLayout(15,1);
 	JFormattedTextField inputField1;
@@ -463,7 +464,7 @@ class EditingPanel extends JPanel{
 											add(updateBox);
 											add(new JLabel("Member " + Menu.dbh.checkMemberActive(idPanelInput), SwingConstants.CENTER));
 
-											submitButtonUpdate.addActionListener(new ActionListener() {
+											submitButtonActive.addActionListener(new ActionListener() {
 								 				public void actionPerformed(ActionEvent event) {
 								 					if(Menu.dbh.checkMemberActive(idPanelInput).equals("is active")){
 														Menu.dbh.setMemberActive(idPanelInput, "0");
@@ -475,7 +476,9 @@ class EditingPanel extends JPanel{
 								 					}
 								 				}
 		 									});
-											add(submitButtonUpdate);
+
+
+											add(submitButtonActive);
 										}
 									}
 								});
