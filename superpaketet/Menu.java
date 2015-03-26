@@ -34,7 +34,7 @@ public class Menu extends JFrame{
 		
 		setTitle(title);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(725,400);
+		setSize(725,500);
 		setLocationRelativeTo(null);
 		setVisible(true);
 	
@@ -44,7 +44,7 @@ public class Menu extends JFrame{
 
 		
 		Container contentPane = window.getContentPane();
-		backgroundLeft.setPreferredSize(new Dimension(460,400));
+		backgroundLeft.setPreferredSize(new Dimension(460,500));
 		contentPane.add(backgroundLeft, BorderLayout.LINE_START);
 		contentPane.add(backgroundRight, BorderLayout.LINE_END);
 		tab.add("Browse", browseTab);
@@ -53,7 +53,7 @@ public class Menu extends JFrame{
 		editTab.add(editingMenu, BorderLayout.CENTER);
 		backgroundLeft.add(tab, BorderLayout.PAGE_START);
 		
-		resultView.setPreferredSize(new Dimension(260,400));
+		resultView.setPreferredSize(new Dimension(260,500));
 		backgroundRight.add(resultView, BorderLayout.CENTER);
 		resultView.setViewportView(resultPane);
 		resultPane.setVisible(true);
@@ -171,7 +171,7 @@ class EditingPanel extends JPanel{
 	JButton submitButton = new JButton("Submit");
 	JButton submitButtonDelete = new JButton("Submit");
 	JButton submitButton2 = new JButton("Check existance");
-	GridLayout subMenuGrid = new GridLayout(12,1);
+	GridLayout subMenuGrid = new GridLayout(15,1);
 	JFormattedTextField inputField1;
 	JTextField inputField2 = new JTextField();
 	JTextField inputField3 = new JTextField();
@@ -182,9 +182,24 @@ class EditingPanel extends JPanel{
 	JFormattedTextField joinField = new JFormattedTextField(new SimpleDateFormat("dd/MM/yyyy"));
 	JComboBox cb;
 	JCheckBox active = new JCheckBox();
+	JCheckBox playerCheck = new JCheckBox();
+	JCheckBox coachCheck  = new JCheckBox();
+	JCheckBox parentCheck = new JCheckBox();
 	JComboBox roleBox;
 	JPanel idPanel = new JPanel(new GridLayout(1,2));
 	String idPanelInput;
+	String [] updateArray = {"Select trait to update", 
+							 "Update given name", 
+							 "Update family name", 
+							 "Update e-mail", 
+							 "Update member role",
+							 "Update team",
+							 "Activate/deactivate member"};
+	JComboBox updateBox = new JComboBox(updateArray);
+	JButton submitButtonUpdate = new JButton("Submit update");
+	boolean isParent = false;
+	boolean isCoach  = false; 
+	boolean isPlayer = false;
 
 
 	
@@ -200,20 +215,17 @@ class EditingPanel extends JPanel{
 		String [] roles = {"player", "coach", "parent"};
 		roleBox = new JComboBox(roles);
 		String [] cbOptions = {
-			"Select:", 
+			"Select function", 
 			"Create new member", 
 			"Update existing member", 
-			"Activate/deactivate member",
-			"Update e-mail",
-			"Update function",
 			"Delete member"};	
 		cb = new JComboBox(cbOptions);
-		add(cb);
 
 		cb.addItemListener(new ItemListener(){
 			public void itemStateChanged(ItemEvent e){
 				removeAll();
 				add(cb);
+
 				if(e.getItem().equals("Create new member")){
 					idPanel = new JPanel(new GridLayout(1,2));
 					idPanel.add(new JLabel ("           ID:"));
@@ -236,7 +248,10 @@ class EditingPanel extends JPanel{
 								add(labeledComponent("Birth date:", birthField));
 								add(labeledComponent("Member since:", joinField));
 								add(labeledComponent("Active status:", active));
-								add(labeledComponent("Role:", roleBox));
+								add(new JLabel ("           Roles:"));
+								add(labeledComponent("      Player", playerCheck));
+								add(labeledComponent("      Coach", coachCheck));
+								add(labeledComponent("      Parent", parentCheck));
 								add(labeledComponent("Team:", inputField6));
 								submitButton.addActionListener(new ActionListener() {
 					 				public void actionPerformed(ActionEvent event) {
@@ -249,20 +264,21 @@ class EditingPanel extends JPanel{
 												activeString = "0";
 											}
 
-											String roleString;
-											if (roleBox.getSelectedItem().equals("player")){
-												roleString = "0";
-											}
-											else if (roleBox.getSelectedItem().equals("coach")){
-												roleString = "1";
-											}
-											else{
-												roleString = "2";
-											}
 
+											if (parentCheck.isSelected()){
+												isParent = true;
+											}
+											if (coachCheck.isSelected()){
+												isCoach = true;
+											}
+											if(playerCheck.isSelected()){
+												isPlayer = true;
+											}
+											
 											Menu.dbh.addMember(idPanelInput, inputField2.getText(), inputField3.getText(),
 															   inputField4.getText(), inputField5.getText(), birthField.getText(),
-															   joinField.getText(), activeString, roleString, inputField6.getText());
+															   joinField.getText(), activeString, isCoach, isPlayer, 
+															   isParent, inputField6.getText());
 											Menu.printToResultPane("Member successfully added");
 										}
 										else{
@@ -280,20 +296,178 @@ class EditingPanel extends JPanel{
 					add(submitButton2);
 				}
 
+
 				else if(e.getItem().equals("Update existing member")){
+					add(labeledComponent("ID:", inputField1));
+					submitButton2.addActionListener(new ActionListener() {
+			 			public void actionPerformed(ActionEvent event) {
+			 				removeAll();
+			 				add(cb);
+			 				boolean memberExist = Menu.dbh.checkMemberExistance(inputField1.getText());
+							if(memberExist){
+								idPanelInput = inputField1.getText();
+								remove(idPanel);
+								remove(submitButton2);
+								add(new JLabel("Edit member - ID: " + idPanelInput, SwingConstants.CENTER));
 
-				}
+								updateBox.addItemListener(new ItemListener(){
+									public void itemStateChanged(ItemEvent e){
 
-				else if(e.getItem().equals("Activate/deactivate member")){
 
-				}
+										add(new JLabel("Edit member - ID: " + idPanelInput, SwingConstants.CENTER));
 
-				else if(e.getItem().equals("Update e-mail")){
+										add(updateBox);
 
-				}
+										if(e.getItem().equals("Update given name")){
+											removeAll();
+											add(cb);
+											add(new JLabel("Edit member - ID: " + idPanelInput, SwingConstants.CENTER));
+											add(updateBox);
+											add(labeledComponent("New given name:", inputField2));
+											
+											submitButtonUpdate.addActionListener(new ActionListener() {
+								 				public void actionPerformed(ActionEvent event) {
+								 					if(!inputField2.equals("")){
+														Menu.dbh.updateMemberMedlem(idPanelInput, inputField2.getText(), "givenName");
+								 						Menu.printToResultPane("Member successfully updated");
+								 					}
+								 					else{
+								 						JOptionPane.showMessageDialog(null, "All fields need input", "Error", 0);
+								 					}
+								 				}
+		 									});
+											add(submitButtonUpdate);
+										}	
 
-				else if(e.getItem().equals("Update function")){
+										else if(e.getItem().equals("Update family name")){
+											removeAll();
+											add(cb);
+											add(new JLabel("Edit member - ID: " + idPanelInput, SwingConstants.CENTER));
+											add(updateBox);
+											add(labeledComponent("New family name:", inputField2));
 
+											submitButtonUpdate.addActionListener(new ActionListener() {
+								 				public void actionPerformed(ActionEvent event) {
+								 					if(!inputField2.equals("")){
+														Menu.dbh.updateMemberMedlem(idPanelInput, inputField2.getText(), "familyName");
+								 						Menu.printToResultPane("Member successfully updated");
+								 					}
+								 					else{
+								 						JOptionPane.showMessageDialog(null, "All fields need input", "Error", 0);
+								 					}
+								 				}
+		 									});
+											add(submitButtonUpdate);
+										}
+
+										else if(e.getItem().equals("Update e-mail")){
+											removeAll();
+											add(cb);
+											add(new JLabel("Edit member - ID: " + idPanelInput, SwingConstants.CENTER));
+											add(updateBox);
+											add(labeledComponent("New e-mail:", inputField2));
+
+											submitButtonUpdate.addActionListener(new ActionListener() {
+								 				public void actionPerformed(ActionEvent event) {
+								 					if(!inputField2.equals("")){
+														Menu.dbh.updateMemberMedlem(idPanelInput, inputField2.getText(), "email");
+								 						Menu.printToResultPane("Member successfully updated");
+								 					}
+								 					else{
+								 						JOptionPane.showMessageDialog(null, "All fields need input", "Error", 0);
+								 					}
+								 				}
+		 									});
+											add(submitButtonUpdate);
+										}
+
+										else if(e.getItem().equals("Update team")){
+											removeAll();
+											add(cb);
+											add(new JLabel("Edit member - ID: " + idPanelInput, SwingConstants.CENTER));
+											add(updateBox);
+
+											add(labeledComponent("New team:", inputField2));
+											submitButtonUpdate.addActionListener(new ActionListener() {
+								 				public void actionPerformed(ActionEvent event) {
+								 					if(!inputField2.equals("")){
+														Menu.dbh.updateMemberMedlem(idPanelInput, inputField2.getText(),  "team");
+								 						Menu.printToResultPane("Member successfully updated");
+								 					}
+								 					else{
+								 						JOptionPane.showMessageDialog(null, "All fields need input", "Error", 0);
+								 					}
+								 				}
+		 									});
+											add(submitButtonUpdate);
+										}
+
+										else if(e.getItem().equals("Update member role")){
+											removeAll();
+											add(cb);
+											add(new JLabel("Edit member - ID: " + idPanelInput, SwingConstants.CENTER));
+											add(updateBox);
+
+											add(new JLabel("Choose roles for member", SwingConstants.CENTER));
+											add(new JLabel ("           Roles:"));
+											add(labeledComponent("      Player", playerCheck));
+											add(labeledComponent("      Coach", coachCheck));
+											add(labeledComponent("      Parent", parentCheck));
+											if (parentCheck.isSelected()){
+												isParent = true;
+											}
+											if (coachCheck.isSelected()){
+												isCoach = true;
+											}
+											if(playerCheck.isSelected()){
+												isPlayer = true;
+											}
+											submitButtonUpdate.addActionListener(new ActionListener() {
+								 				public void actionPerformed(ActionEvent event) {
+								 					if(!inputField2.equals("")){
+														Menu.dbh.updateMemberRole(idPanelInput, isCoach, isParent, isPlayer);
+								 						Menu.printToResultPane("Member successfully updated");
+								 					}
+								 					else{
+								 						JOptionPane.showMessageDialog(null, "All fields need input", "Error", 0);
+								 					}
+								 				}
+		 									});
+		 									add(submitButtonUpdate);
+										}
+
+										else if(e.getItem().equals("Activate/deactivate member")){
+											removeAll();
+											add(cb);
+											add(new JLabel("Edit member - ID: " + idPanelInput, SwingConstants.CENTER));
+											add(updateBox);
+											add(new JLabel("Member " + Menu.dbh.checkMemberActive(idPanelInput), SwingConstants.CENTER));
+
+											submitButtonUpdate.addActionListener(new ActionListener() {
+								 				public void actionPerformed(ActionEvent event) {
+								 					if(Menu.dbh.checkMemberActive(idPanelInput).equals("is active")){
+														Menu.dbh.setMemberActive(idPanelInput, "0");
+														Menu.printToResultPane("Member inactivated");
+								 					}
+								 					else{
+								 						Menu.dbh.setMemberActive(idPanelInput, "1");
+								 						Menu.printToResultPane("Member activated");
+								 					}
+								 				}
+		 									});
+											add(submitButtonUpdate);
+										}
+									}
+								});
+								add(updateBox);
+
+							}
+							else{
+								JOptionPane.showMessageDialog(null, "No such ID", "Error", 0);
+							}
+						}		
+					});
+					add(submitButton2);
 				}
 
 				else if(e.getItem().equals("Delete member")){
@@ -316,6 +490,7 @@ class EditingPanel extends JPanel{
 			}
 		});
 		
+		add(cb);
 
 	}	
 

@@ -2,6 +2,7 @@ package superpaketet;
 
 import java.sql.*;
 import java.util.*;
+import java.lang.*;
 
 public class DatabaseHandler{
 
@@ -93,10 +94,10 @@ public class DatabaseHandler{
 		return arr; 
 	}
 
-	public void addMember(String id, String givenName, String familyName, 
-						  String email, String gender, String birthdate, 
-						  String memberSince, String active, String role, 
-						  String team){
+public void addMember(String id, String givenName, String familyName, 
+					  String email, String gender, String birthdate, 
+					  String memberSince, String active, boolean isCoach, 
+					  boolean isPlayer, boolean isParent, String team){
 		Statement s = null;
 		try{
 			s = DatabaseHandler.conn.createStatement();
@@ -105,13 +106,29 @@ public class DatabaseHandler{
 							+ id + ", '" + givenName + "', '" + familyName + "', '" + email
 							+ "', '" + gender + "', '" + birthdate + "', '" + memberSince 
 							+ "', " + active + ")");
-			s.executeUpdate("INSERT INTO funktion (id, role, team) VALUES (" + id + ", " 
-							+ role + ", '" + team + "')");
+			String role;
+			if(isCoach){
+				role = "1";
+				s.executeUpdate("INSERT INTO funktion (id, role, team) VALUES (" 
+								+ id + ", " + role + ", '" + team + "')");
+			}
+			if(isParent){
+				role = "2";
+				s.executeUpdate("INSERT INTO funktion (id, role, team) VALUES (" 
+								+ id + ", " + role + ", '" + team + "')");
+			}
+			if(isPlayer){
+				role = "0";
+				s.executeUpdate("INSERT INTO funktion (id, role, team) VALUES (" 
+								+ id + ", " + role + ", '" + team + "')");
+			}
+		
 		}
 		catch (SQLException se) {
 			System.out.println(se.getMessage());
 		}
-	}
+}
+
 
 	public void deleteMember(String id){
 		Statement s = null;
@@ -125,6 +142,52 @@ public class DatabaseHandler{
 		}
 	}
 
+	public void updateMemberMedlem(String id, String field, String value){
+		Statement s = null;
+		try{
+			s = DatabaseHandler.conn.createStatement();
+			s.executeUpdate("UPDATE medlem SET " + value + " = '" + field + "' WHERE id = " + id);
+		}
+		catch (SQLException se) {
+			System.out.println(se.getMessage());
+		}
+	}
+
+	public void updateMemberFunktion(String id, String field, String value){
+		Statement s = null;
+		try{
+			s = DatabaseHandler.conn.createStatement();
+			s.executeUpdate("UPDATE funktion SET " + field + " = " + value + " WHERE id = " + id);
+		}
+		catch (SQLException se) {
+			System.out.println(se.getMessage());
+		}
+	}
+
+	public void updateMemberRole(String id, boolean isCoach, boolean isParent, boolean isPlayer){
+		Statement s = null;
+		try{
+			s = DatabaseHandler.conn.createStatement();
+			if(isCoach){
+				s.executeUpdate("UPDATE funktion SET role = '1' WHERE ID = '" + id + "'");
+			}else{
+				s.executeUpdate("DELETE role FROM funktion WHERE role = '1' AND id = '" + id +"'");
+			}
+			if(isParent){
+				s.executeUpdate("UPDATE funktion SET role = '2' WHERE ID = '" + id + "'");
+			}else{
+				s.executeUpdate("DELETE role FROM funktion WHERE role = '2' AND id = '" + id + "'");
+			}	
+			if(isPlayer){
+				s.executeUpdate("UPDATE funktion SET role = '0' WHERE ID = '" + id + "'");
+			}else{
+				s.executeUpdate("DELETE role FROM funktion WHERE role = '0' AND id = '" + id + "'");
+			}
+		}
+		catch(SQLException se){
+			System.out.println(se.getMessage());
+		}
+	}
 	public static ArrayList<String> listNamesByFamilyName () {
 		ArrayList<String> er   = search("SELECT * FROM medlem ORDER BY familyName");
 		return er;
@@ -159,6 +222,37 @@ public class DatabaseHandler{
 			System.out.println(se.getMessage());
 		}
 		return true;
+	}
+
+	public String checkMemberActive(String id){
+		Statement s = null;
+		ResultSet rs = null;
+		String active = null;
+		try{
+			s = DatabaseHandler.conn.createStatement();
+			rs = s.executeQuery("SELECT active FROM medlem WHERE id = '" + id + "'");
+			if(rs.getString(1).equals("1")){
+				active = "is active";
+			}
+			else{
+				active = "is inactive";
+			}
+		}
+		catch (SQLException se){
+			System.out.println(se.getMessage());
+		}
+		return active;
+	}
+
+	public void setMemberActive(String id, String active){
+		Statement s = null;
+		try{
+			s = DatabaseHandler.conn.createStatement();
+			s.executeUpdate("UPDATE medlem SET active = " + active + " WHERE id = " + id);
+		}
+		catch(SQLException se){
+			System.out.println(se.getMessage());
+		}
 	}
 }
 
