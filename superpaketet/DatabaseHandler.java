@@ -69,6 +69,7 @@ public class DatabaseHandler{
 		try {
 			s = DatabaseHandler.conn.createStatement();
 			rs = s.executeQuery("SELECT * FROM medlem NATURAL JOIN funktion WHERE team = '" + team + "' ORDER BY role DESC, givenName");
+			
 			while(rs.next()) {
 				int role = rs.getInt("role");
 				String roleString = null;
