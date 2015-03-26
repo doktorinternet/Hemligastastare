@@ -221,17 +221,23 @@ public void addMember(String id, String givenName, String familyName,
 		return true;
 	}
 	
-	public String[] checkMemberRoles(String id){
+	public ArrayList<String> checkMemberRoles(String id){
 		Statement s = null;
 		ResultSet rs = null;
-		String role = null;
-		String[] roles = new String[2];
+		//String role = null;
+		//String[] roles = new String[2];
+		ArrayList<String> roles = new ArrayList();
 		try{
 			s = DatabaseHandler.conn.createStatement();
-			rs = s.executeQuery("SELECT role FROM funktion NATURAL JOIN "
-								+ "medlem WHERE id = '" + id + "'");
-			Array a = rs.getArray("is_nullable");
-			String[] nullable = (String[])a.getArray();
+/* 			rs = s.executeQuery("SELECT role FROM funktion NATURAL JOIN "
+								+ "medlem WHERE id = '" + id + "'"); */
+			roles = search("SELECT role FROM funktion NATURAL JOIN "
+											+ "medlem WHERE id = '" + id + "'");
+			System.out.println("Instans array skapas");
+			//Array a = rs.getArray(1);
+			System.out.println("Array skapad ");
+			//roles = (String[])a.getArray();
+			System.out.println("Array skapad ");
 			/* while(rs.next()){
 				int i = 1;
 				int a = 0;
@@ -255,14 +261,16 @@ public void addMember(String id, String givenName, String familyName,
 				a++;
 			} */
 		
-		for (String r : nullable){
+		for (String r : roles){
 			System.out.println(r);
 		}
 		
 		}
 		catch (SQLException se){
+			System.out.println("Error message in catch box");
 			System.out.println(se.getMessage());
 		}
+		System.out.println("return roles");
 		return roles;
 	}
 

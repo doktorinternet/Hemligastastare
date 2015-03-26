@@ -415,15 +415,13 @@ class EditingPanel extends JPanel{
 											add(labeledComponent("      Coach", coachCheck));
 											add(labeledComponent("      Parent", parentCheck));
 											
-											String [] roles = Menu.dbh.checkMemberRoles(idPanelInput);
-											roles = Arrays.stream(roles).filter(s -> (s != null && s.length() > 0)).toArray(String[]::new);   
-											Arrays.sort(roles);
+											ArrayList<String> roles = new ArrayList<String>(Menu.dbh.checkMemberRoles(idPanelInput));
 											
-											String coach; 	
-											String parent;  
-											String player; 	
+											//roles = Arrays.stream(roles).filter(s -> (s != null && s.length() > 0)).toArray(String[]::new);   
+											//Arrays.sort(roles);
+											Collections.sort(roles); 	
 											
-											for ( String s : roles){
+											for (String s : roles){
 												if (s.equals("0")){
 													playerCheck.setSelected(true);
 												}
@@ -433,17 +431,7 @@ class EditingPanel extends JPanel{
 												else if(s.equals("2")){
 													parentCheck.setSelected(true);
 												}
-											}
-											
-/* 											if(roles[2].equalsIgnoreCase("player")){
-												playerCheck.setSelected(true);
-											}
-											if(roles[0].equalsIgnoreCase("coach")){
-												coachCheck.setSelected(true);
-											}
-											if(roles[1].equalsIgnoreCase("parent")){
-												playerCheck.setSelected(true);
-											} */
+											} 
 											
 											if (parentCheck.isSelected()){
 												isParent = true;
