@@ -201,9 +201,11 @@ public void addMember(String id, String givenName, String familyName,
 		return er;
 	}
 
-	public static ArrayList<String> getTeamcoaches (String team) {
+	public static ArrayList<String> getTeamCoaches (String team) {
 		
+		System.out.println("före lagleadarsök");
 		ArrayList<String> er   = search("SELECT * FROM medlem NATURAL JOIN funktion WHERE role = 1 AND team = '" + team + "'");
+		System.out.println("efter lagleadarsök");
 		return er;
 	}
 
