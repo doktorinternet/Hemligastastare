@@ -65,13 +65,21 @@ public class Menu extends JFrame{
 	
 	public void actionPerformed(ActionEvent e) {}
 	
-	
-	public static void listOfNames(ArrayList<String> listData){
+
+ 	public static void listOfNames(ArrayList<String> listData){
 		JList<String> list = new JList(listData.toArray());
 		resultPane.removeAll();
 		resultPane.add(list, BorderLayout.CENTER);
 		resultPane.updateUI();
-	}
+	} 
+	
+/* 		public static void listOfNames(ArrayList<String> listData){
+		JList<String> list = new JList(listData.toArray());
+		resultView.removeAll();
+		resultView.add(list);
+		resultView.updateUI();
+	} */
+
 
 	public static void printToResultPane(String a){
 		JLabel label = new JLabel(a, SwingConstants.CENTER);
@@ -130,7 +138,9 @@ class BrowsingPanel extends JPanel{
 					b1.addActionListener(new ActionListener() {
 		 				public void actionPerformed(ActionEvent event) {
 							String text = textField.getText();
-							Menu.listOfNames(Menu.dbh.getTeamcoaches(text));
+							System.out.println("Ny trycker vi på knappen");
+							Menu.listOfNames(Menu.dbh.getTeamCoaches(text));
+							System.out.println("Nu är knappen färdigtryckt");
 					} });					
 					add(EditingPanel.labeledComponent("Team name:", textField));
 					add(b1);
@@ -247,6 +257,8 @@ class EditingPanel extends JPanel{
 								add(labeledComponent("Family name:", inputField3));
 								add(labeledComponent("E-mail:", inputField4));
 								add(labeledComponent("Gender:", inputField5));
+								birthField.setText("dd/MM/yyyy");
+								birthField.setFocusLostBehavior(3);
 								add(labeledComponent("Birth date:", birthField));
 								add(labeledComponent("Member since:", joinField));
 								add(labeledComponent("Active status:", active));
