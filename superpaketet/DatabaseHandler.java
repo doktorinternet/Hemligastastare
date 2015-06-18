@@ -6,7 +6,7 @@ import java.lang.*;
 
 public class DatabaseHandler{
 
-	static final String DB_URL = "jdbc:sqlite:minDatabas.db";
+	static final String DB_URL = "jdbc:sqlite:minDatabasKopia.db";
 	static final String JDBC_DRIVER = "org.sqlite.JDBC";
 	public static Connection conn = null;
 	
@@ -23,7 +23,7 @@ public class DatabaseHandler{
 
 		try {
 			System.out.println("Connecting to database...");
-			conn = DriverManager.getConnection("jdbc:sqlite:minDatabas.db"); 
+			conn = DriverManager.getConnection(DB_URL); 
 		} catch (SQLException sqlE) {
 			System.out.println("Couldn't connect:");
 			sqlE.printStackTrace();
@@ -204,9 +204,7 @@ public void addMember(String id, String givenName, String familyName,
 
 	public static ArrayList<String> getTeamCoaches (String team) {
 		
-		System.out.println("före lagleadarsök");
 		ArrayList<String> er   = search("SELECT * FROM medlem NATURAL JOIN funktion WHERE role = 1 AND team = '" + team + "'");
-		System.out.println("efter lagleadarsök");
 		return er;
 	}
 

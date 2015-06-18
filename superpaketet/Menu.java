@@ -138,9 +138,7 @@ class BrowsingPanel extends JPanel{
 					b1.addActionListener(new ActionListener() {
 		 				public void actionPerformed(ActionEvent event) {
 							String text = textField.getText();
-							System.out.println("Ny trycker vi på knappen");
 							Menu.listOfNames(Menu.dbh.getTeamCoaches(text));
-							System.out.println("Nu är knappen färdigtryckt");
 					} });					
 					add(EditingPanel.labeledComponent("Team name:", textField));
 					add(b1);
@@ -260,6 +258,8 @@ class EditingPanel extends JPanel{
 								birthField.setText("dd/MM/yyyy");
 								birthField.setFocusLostBehavior(3);
 								add(labeledComponent("Birth date:", birthField));
+								joinField.setText("dd/MM/yyyy");
+								joinField.setFocusLostBehavior(3);
 								add(labeledComponent("Member since:", joinField));
 								add(labeledComponent("Active status:", active));
 								add(new JLabel ("           Roles:"));

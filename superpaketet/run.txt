@@ -2,3 +2,17 @@
 javac -cp .;superpaketet/JDBC.jar superpaketet/*.java
 
 java -cp .;superpaketet/JDBC.jar superpaketet/Menu
+
+
+
+
+
+
+
+Här är några saker att åtgärda:
+
+Sök lag, team leader verkar inte funka riktigt
+
+Skapa ny medlem.
+
+Lyckats inte mata in något i datumfälten, inmatningen bara försvinner så fort man går till nästa fält.
