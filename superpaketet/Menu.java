@@ -103,15 +103,40 @@ public class Menu extends JFrame{
 
 class BrowsingPanel extends JPanel{
 	
-	JButton b1, b2, b3;
+	JButton memberButton, tlButton, idListButton, nameListButton, teamButton;
 	JTextField textField = new JTextField();
 	JComboBox cb; 
 	
 	public BrowsingPanel(){
 	
-		b1 = new JButton("Go");
-		b2 = new JButton("Go");
-		b3 = new JButton("Go");
+		memberButton = new JButton("Go");
+		memberButton.addActionListener(new ActionListener() {
+		 				public void actionPerformed(ActionEvent event) {
+							String text = textField.getText();
+							Menu.listOfNames(Menu.dbh.getMember(text));
+						} });
+		tlButton = new JButton("Go");
+		tlButton.addActionListener(new ActionListener() {
+		 				public void actionPerformed(ActionEvent event) {
+							String text = textField.getText();
+							Menu.listOfNames(Menu.dbh.getTeamCoaches(text));
+						} });
+		idListButton = new JButton("Go");
+		idListButton.addActionListener(new ActionListener() {
+		 				public void actionPerformed(ActionEvent event) {
+							Menu.listOfNames(Menu.dbh.listNamesByID());
+						} });
+		nameListButton = new JButton("Go");
+		nameListButton.addActionListener(new ActionListener() {
+		 				public void actionPerformed(ActionEvent event) {
+							Menu.listOfNames(Menu.dbh.listNamesByFamilyName());
+						} });
+		teamButton = new JButton("Go");
+		teamButton.addActionListener(new ActionListener() {
+		 				public void actionPerformed(ActionEvent event) {
+							String text = textField.getText();
+							Menu.listOfNames(Menu.dbh.searchTeamInfo(text));
+						} });
 
 		setLayout(new GridLayout(12, 1));
 		String [] cbOptions = {"Select:", "Search member", "Search teamleader", "List all members", "Search info on team"};
@@ -122,50 +147,28 @@ class BrowsingPanel extends JPanel{
 		cb.addItemListener(new ItemListener(){
 			public void itemStateChanged(ItemEvent e){
 				removeAll();
+				textField.setText("");
 				add(cb);
 				if(e.getItem().equals("Search member"))
 				{
-					b1.addActionListener(new ActionListener() {
-		 				public void actionPerformed(ActionEvent event) {
-							String text = textField.getText();
-							Menu.listOfNames(Menu.dbh.getMember(text));
-					} });
+					
 					add(EditingPanel.labeledComponent("Last name:", textField));
-					add(b1);
+					add(memberButton);
 					
 				}else if(e.getItem().equals("Search teamleader")){
-					
-					b1.addActionListener(new ActionListener() {
-		 				public void actionPerformed(ActionEvent event) {
-							String text = textField.getText();
-							Menu.listOfNames(Menu.dbh.getTeamCoaches(text));
-					} });					
+										
 					add(EditingPanel.labeledComponent("Team name:", textField));
-					add(b1);
+					add(tlButton);
 
 				}else if(e.getItem().equals("List all members")){
 					
-					b2.addActionListener(new ActionListener() {
-		 				public void actionPerformed(ActionEvent event) {
-							Menu.listOfNames(Menu.dbh.listNamesByID());
-					} });
-
-					b3.addActionListener(new ActionListener() {
-		 				public void actionPerformed(ActionEvent event) {
-							Menu.listOfNames(Menu.dbh.listNamesByFamilyName());
-					} });
-					add(EditingPanel.labeledComponent("List by ID:", b2));
-					add(EditingPanel.labeledComponent("List by last name:", b3));
+					add(EditingPanel.labeledComponent("List by ID:", idListButton));
+					add(EditingPanel.labeledComponent("List by last name:", nameListButton));
 
 				}else if(e.getItem().equals("Search info on team")){
-					
-					b1.addActionListener(new ActionListener() {
-		 				public void actionPerformed(ActionEvent event) {
-							String text = textField.getText();
-							Menu.listOfNames(Menu.dbh.searchTeamInfo(text));
-					} });					
+										
 					add(EditingPanel.labeledComponent("Team name:", textField));
-					add(b1);				
+					add(teamButton);				
 				}
 			updateUI();
 			}
